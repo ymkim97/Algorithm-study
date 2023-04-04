@@ -1,6 +1,5 @@
 import sys
 from collections import deque
-import copy
 
 input = sys.stdin.readline
 
@@ -52,7 +51,7 @@ def bfs(a, b):
 
         if len(q) == 0:
             time += 1
-            q = copy.deepcopy(q2)
+            q = deque([arr[:] for arr in q2])
             q2 = deque()
 
 for i in range(R):
