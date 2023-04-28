@@ -16,9 +16,7 @@ class Solution {
     public void backtrack(int k, int[][] dungeons, int cnt) {
 
         if(!visit.contains(0)) {
-            if(cnt > answer) {
-                answer = cnt;
-            }
+            answer = Math.max(answer, cnt);
             return;
         }
         
@@ -33,10 +31,7 @@ class Solution {
                 }
                 visit.set(i, 0);
             }
-            
         }
-        
         return;
     }
-    
 }
