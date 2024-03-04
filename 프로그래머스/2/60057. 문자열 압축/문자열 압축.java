@@ -2,50 +2,60 @@ import java.util.*;
 
 class Solution {
     
-    public List<String> split(String source, int length) {
-        List<String> tokens = new ArrayList<>();
-        for(int i = 0; i < source.length(); i += length) {
-            int j = i + length;
-            if (j > source.length())
-                j = source.length();
-            tokens.add(source.substring(i, j));    
-        }
-        
-        return tokens;
-    }
-    
-    public int compress(String source, int length) {
-        StringBuilder builder = new StringBuilder();
-        String last = "";
-        int count = 0;
-        
-        for (String token: split(source, length)) {
-            if (token.equals(last))
-                count++;
-            else{
-                if (count > 1) builder.append(count);
-                builder.append(last);
-                last = token;
-                count = 1;
-            }       
-        }
-        
-        if (count > 1) builder.append(count);
-        builder.append(last);
-        
-        return builder.length();
-    }
+    int answer;
     
     public int solution(String s) {
-        int min = Integer.MAX_VALUE;
+        answer = s.length();
         
-        for (int length = 1; length <= s.length(); length++) {
-            // 압축 후 비교 - compress()
-            int compressed = compress(s, length);
-            if (compressed < min)
-                min = compressed;
+        for (int i = 1; i <= s.length() / 2; i++) {
+            check(s, i);
         }
         
-        return min;
+        return answer;
+    }
+    
+    public void check(String s, int unitLength) {
+        List<String> div = new ArrayList<>();
+        int idx = 0;
+        
+        while (idx < s.length()) {
+            if (idx + unitLength >= s.length()) {
+                div.add(s.substring(idx));
+                break;
+            }
+            
+            String newS = s.substring(idx, idx + unitLength);
+            div.add(newS);
+            
+            idx += unitLength;
+        }
+        
+        int tmp = 0;
+        boolean[] visited = new boolean[div.size()];
+        
+        for (int i = 0; i < div.size(); i++) {
+            if (visited[i]) continue;
+            
+            int cnt = 1;
+            String now = div.get(i);
+            for (int j = i + 1; j < div.size(); j++) {
+                if (now.equals(div.get(j))) {
+                    visited[j] = true;
+                    cnt += 1;
+                }
+                
+                else {
+                    break;
+                }
+            }
+            
+            tmp += now.length();
+            
+            if (cnt > 1) {
+                tmp += String.valueOf(cnt).length();
+            }
+        }
+        
+        answer = Math.min(answer, tmp);
     }
 }
