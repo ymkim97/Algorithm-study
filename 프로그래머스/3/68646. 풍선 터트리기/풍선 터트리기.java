@@ -1,29 +1,26 @@
+import java.util.*;
+
 class Solution {
     public int solution(int[] a) {
-        if (a.length == 1) {
-            return 1;
+        int answer = 0;
+        
+        if (a.length == 1) return 1;
+        if (a.length == 2) return 2;
+        
+        int leftMin = a[0];
+        int[] rightMin = new int[a.length];
+        rightMin[a.length - 1] = a[a.length - 1];
+        
+        for (int i = a.length - 2; i >= 0; i--) {
+            rightMin[i] = Math.min(a[i], rightMin[i + 1]);
         }
-
-        int left = a[0];
-        int right = a[a.length - 1];
-        int ans = 2;
-
-        for (int i = 1; i < a.length - 1; i++) {
-            if (a[i] < left) {
-                left = a[i];
-                ans++;
-            }
-
-            if (a[a.length - 1 - i] < right) {
-                right = a[a.length - 1 - i];
-                ans++;
-            }
+        
+        for (int i = 0; i < a.length; i++) {
+            if (!(a[i] > leftMin && a[i] > rightMin[i])) answer += 1;
             
-            if (left == right) {
-                ans--;
-                break;
-            }
+            leftMin = Math.min(leftMin, a[i]);
         }
-        return ans;
+        
+        return answer;
     }
 }
