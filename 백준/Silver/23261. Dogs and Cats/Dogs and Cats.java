@@ -16,7 +16,7 @@ class Main {
         	
         	int N = Integer.parseInt(st.nextToken());
         	int D = Integer.parseInt(st.nextToken());
-        	int C = Integer.parseInt(st.nextToken());
+        	long C = Long.parseLong(st.nextToken());
         	int M = Integer.parseInt(st.nextToken());
         	
         	int dCount = 0;
