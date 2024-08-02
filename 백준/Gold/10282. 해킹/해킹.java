@@ -1,80 +1,89 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.*;
+import java.io.*;
 
-public class Main {
-    public static void main(String[] args) throws IOException {
+class Main {
+	
+	public static void main(String[] args) throws IOException{
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        int testcase = Integer.parseInt(br.readLine());
-
-        while(testcase --> 0) {
-            StringTokenizer st = new StringTokenizer(br.readLine());
-            int n = Integer.parseInt(st.nextToken());
-            int d = Integer.parseInt(st.nextToken());
-            int c = Integer.parseInt(st.nextToken());
-            List<List<Node>> graph = new ArrayList<>();
-
-            for (int i = 0; i <= n; i++) {
-                graph.add(new ArrayList<>());
-            }
-
-            for (int i = 0; i < d; i++) {
-                st = new StringTokenizer(br.readLine());
-                int a = Integer.parseInt(st.nextToken());
-                int b = Integer.parseInt(st.nextToken());
-                int s = Integer.parseInt(st.nextToken());
-                graph.get(b).add(new Node(a, s));
-            }
-
-            dijkstra(graph, n, c);
+        StringTokenizer st;
+     
+        int testLimit = Integer.parseInt(br.readLine());
+        StringBuilder sb = new StringBuilder();
+        
+        for (int test = 0; test < testLimit; test++) {
+        	st = new StringTokenizer(br.readLine());
+        	
+        	int n = Integer.parseInt(st.nextToken());
+        	int d = Integer.parseInt(st.nextToken()); // dependency cnt
+        	int c = Integer.parseInt(st.nextToken()); // hacked pc
+        	
+        	List<Computer>[] map = new ArrayList[n + 1];
+        	
+        	for (int i = 0; i <= n; i++) {
+        		map[i] = new ArrayList<>();
+        	}
+        	
+        	for (int i = 0; i < d; i++) {
+        		st = new StringTokenizer(br.readLine());
+        		
+        		int a = Integer.parseInt(st.nextToken());
+        		int b = Integer.parseInt(st.nextToken());
+        		int s = Integer.parseInt(st.nextToken());
+        		
+        		map[b].add(new Computer(a, s));
+        	}
+        	
+        	int[] dist = new int[n + 1];
+        	Arrays.fill(dist, Integer.MAX_VALUE);
+        	
+        	dijkstra(dist, c, map);
+        	
+        	int count = 0;
+        	int time = 0;
+        	
+        	for (int i = 0; i <= n; i++) {
+        		if (dist[i] != Integer.MAX_VALUE) {
+        			count++;
+        			time = Math.max(time, dist[i]);
+        		}
+        	}
+        	
+        	sb.append(count).append(' ').append(time).append("\n");
         }
-    }
-
-    public static void dijkstra(List<List<Node>> graph, int n, int start) {
-        int count = 0;
-        int time = 0;
-        int[] arr = new int[n+1];
-        boolean[] visit = new boolean[n+1];
-        Arrays.fill(arr, Integer.MAX_VALUE);
-
-        PriorityQueue<Node> pq = new PriorityQueue<>((o1, o2) -> o1.sec - o2.sec);
-        pq.add(new Node(start, 0));
-        arr[start] = 0;
-
-        while(!pq.isEmpty()) {
-            Node curNode = pq.poll();
-
-            if(!visit[curNode.a]) {
-                count++;
-                visit[curNode.a] = true;
-            }
-            else {
-                continue;
-            }
-            for(Node node : graph.get(curNode.a)) {
-                if(!visit[node.a] && curNode.sec + node.sec < arr[node.a]) {
-                    arr[node.a] = curNode.sec + node.sec;
-                    pq.add(new Node(node.a, arr[node.a]));
-                }
-            }
-        }
-
-        for(int value : arr) {
-            if(value == Integer.MAX_VALUE) {
-                continue;
-            }
-            time = Math.max(time, value);
-        }
-        System.out.println(count + " " + time);
-    }
-
-    static class Node {
-        int a, sec;
-
-        public Node(int a, int sec) {
-            this.a = a;
-            this.sec = sec;
-        }
-    }
+        
+        System.out.println(sb);
+	}
+	
+	public static void dijkstra(int[] dist, int start, List<Computer>[] map) {
+		PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> a[1] - b[1]); // 0: number, 1: time
+		pq.offer(new int[] {start, 0});
+		dist[start] = 0;
+		
+		while (!pq.isEmpty()) {
+			int[] now = pq.poll();
+			int num = now[0];
+			int time = now[1];
+			
+			if (dist[num] < time) continue;
+			
+			for (Computer next : map[num]) {
+				int tmp = time + next.time;
+				
+				if (tmp < dist[next.number]) {
+					dist[next.number] = tmp;
+					pq.offer(new int[] {next.number, tmp});
+				}
+			}
+		}
+	}
+	
+	static class Computer {
+		int number;
+		int time;
+		
+		public Computer(int number, int time) {
+			this.number = number;
+			this.time = time;
+		}
+	}
 }
