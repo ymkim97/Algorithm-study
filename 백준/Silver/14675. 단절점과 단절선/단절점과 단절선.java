@@ -23,6 +23,8 @@ class Main {
         
         int q = Integer.parseInt(br.readLine());
         
+        StringBuilder sb = new StringBuilder();
+        
         for (int i = 0; i < q; i++) {
         	st = new StringTokenizer(br.readLine());
         	
@@ -30,11 +32,13 @@ class Main {
         	int k = Integer.parseInt(st.nextToken());
         	
         	if (t == 1) {
-        		if (nodeCnt[k] == 1) System.out.println("no");
-        		else System.out.println("yes");
+        		if (nodeCnt[k] == 1) sb.append("no").append("\n");
+        		else sb.append("yes").append("\n");
         	}
         	
-        	else System.out.println("yes");
+        	else sb.append("yes").append("\n");
         }
+        
+        System.out.println(sb.toString());
 	}
 }
