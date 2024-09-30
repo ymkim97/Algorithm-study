@@ -1,20 +1,32 @@
 class Solution {
     public int[] solution(String s) {
-        int count = 0;
-        int zeros = 0;
+        int removedZero = 0;
+        int convert = 0;
         
-        while (! s.equals("1")) {
-            count += 1;
+        while (!s.equals("1")) {
+            int originLength = s.length();
             
-            int firstLength = s.length();
-            s = s.replace("0","");
-            zeros += firstLength - s.length();
+            s = s.replace("0", "");
             
-            s = Integer.toString(s.length(), 2);
+            int afterLength = s.length();
+            
+            removedZero += originLength - afterLength;
+            
+            s = toBin(s.length());
+            convert += 1;
         }
         
-        int[] answer = {count, zeros};
+        return new int[] {convert, removedZero};
+    }
+    
+    public String toBin(int n) {       
+        StringBuilder sb = new StringBuilder();
         
-        return answer;
+        while (n > 0) {
+            sb.append(n % 2);
+            n /= 2;
+        }
+        
+        return sb.reverse().toString();
     }
 }
