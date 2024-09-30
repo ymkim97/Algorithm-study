@@ -2,25 +2,17 @@ import java.util.*;
 
 class Solution {
     boolean solution(String s) {
-        boolean answer = true;
-        Stack<Character> stk = new Stack<>();
-        
-        for (char c : s.toCharArray()) {
-            if (c == ')' && stk.isEmpty()) {
-                return false;
-            }
-            
-            else if (c == '(') {
-                stk.push(c);
-            }
+        ArrayDeque<Character> dq = new ArrayDeque<>();
+
+        for (char c: s.toCharArray()) {
+            if (c == '(') dq.addFirst(c);
             
             else {
-                stk.pop();
+                if (!dq.isEmpty() && dq.getLast() == '(') dq.pollLast();
+                else dq.addFirst(c);
             }
         }
         
-        if (!stk.isEmpty()) return false;
-
-        return answer;
+        return dq.isEmpty() ? true : false;
     }
 }
