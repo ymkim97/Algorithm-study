@@ -2,21 +2,19 @@ import java.util.*;
 
 class Solution {
     public String solution(String s) {
-        String answer = "";
-        String[] numbers = s.split(" ");
-        Queue<Integer> minq = new PriorityQueue<>();
-        Queue<Integer> maxq = new PriorityQueue<>(Collections.reverseOrder());
+        String[] nums = s.split(" ");
+        List<Integer> lst = new ArrayList<>();
         
-        for (String c : numbers) {
-            int number = Integer.parseInt(c);
-            minq.offer(number);
-            maxq.offer(number);
+        for (String n: nums) {
+            lst.add(Integer.valueOf(n));
         }
         
-        answer += String.valueOf(minq.poll());
-        answer += " ";
-        answer += String.valueOf(maxq.poll());
+        Collections.sort(lst);
         
-        return answer;
+        StringBuilder sb = new StringBuilder();
+        sb.append(lst.get(0)).append(" ");
+        sb.append(lst.get(lst.size() - 1));
+        
+        return sb.toString();
     }
 }
