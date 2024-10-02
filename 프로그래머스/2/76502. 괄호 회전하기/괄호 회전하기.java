@@ -1,35 +1,39 @@
 import java.util.*;
 
 class Solution {
-    
     public int solution(String s) {
+        ArrayDeque<Character> ad = new ArrayDeque<>();
         int answer = 0;
-        char[] bracket = s.toCharArray();
+        
+        for (char c: s.toCharArray()) {
+            ad.addLast(c);
+        }
         
         for (int i = 0; i < s.length(); i++) {
-            if (slide(bracket, i)) {
-                answer += 1;
-            }
+            if (check(ad)) answer += 1;
+            
+            ad.addLast(ad.pollFirst());
         }
+        
         return answer;
     }
     
-    public boolean slide(char[] bracket, int number) {
-        Stack<Character> stack = new Stack<>();
+    public boolean check(ArrayDeque<Character> ad) {
+        Stack<Character> stk = new Stack<>();
         
-        for (int i = 0; i < bracket.length; i++) {
-            char c = bracket[(i + number) % bracket.length];
+        for (char c: ad.toArray(new Character[0])) {
+            if (c == '(' || c == '{' || c == '[') stk.add(c);
             
-            switch(c) {
-                    case '(' -> stack.push(')');
-                    case '{' -> stack.push('}');
-                    case '[' -> stack.push(']');
-                    case ')', ']', '}' -> {
-                        if (stack.isEmpty()) return false;
-                        if (stack.pop() != c) return false;
-                    } 
-            }            
+            else if (stk.isEmpty() && (c == ')' || c == '}' || c == ']')) return false;
+            
+            else {
+                if (c == ')' && stk.peek() == '(') stk.pop();
+                else if (c == '}' && stk.peek() == '{') stk.pop();
+                else if (c == ']' && stk.peek() == '[') stk.pop();
+                else return false;
+            }
         }
-        return stack.isEmpty();
+        
+        return stk.isEmpty() ? true : false;
     }
 }
