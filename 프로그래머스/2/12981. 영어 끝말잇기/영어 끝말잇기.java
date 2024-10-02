@@ -2,29 +2,25 @@ import java.util.*;
 
 class Solution {
     public int[] solution(int n, String[] words) {
-        int[] answer = {0, 0};
+        int failNum = 0;
+        int failNth = 0;
+        
         Set<String> set = new HashSet<>();
-
-        char last = '#';
+        
         for (int i = 0; i < words.length; i++) {
-            if (i == 0) {
-                last = words[i].charAt(words[i].length() - 1);
-                set.add(words[i]);
-                continue;
-            }
+            String word = words[i];
+            int curNum = i % n + 1;
+            int curNth = i / n + 1;
             
-            if (words[i].charAt(0) != last || set.contains(words[i])) {
-                answer[0] = (i % n) + 1;
-                answer[1] = (i / n) + 1;
+            if (set.contains(word) || (i > 0 && word.charAt(0) != words[i - 1].charAt(words[i - 1].length() - 1))) {
+                failNum = curNum;
+                failNth = curNth;
                 break;
             }
             
-            else {
-                last = words[i].charAt(words[i].length() - 1);
-                set.add(words[i]);
-            }
+            set.add(word);
         }
 
-        return answer;
+        return new int[] {failNum, failNth};
     }
 }
