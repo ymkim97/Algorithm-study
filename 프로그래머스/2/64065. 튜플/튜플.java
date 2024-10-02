@@ -1,23 +1,29 @@
 import java.util.*;
 
 class Solution {
-    public int[] solution(String s) {
-        List<Integer> answer = new ArrayList<>();
-        
+    public int[] solution(String s) {        
         s = s.replace("{{", "");
         s = s.replace("}}", "");
+        String[] list = s.split("\\},\\{");
         
-        String[] spl = s.split("\\}\\,\\{");
-        
-        Arrays.sort(spl, (a, b) -> a.length() - b.length());
-        
-        for (String each : spl) {
-            String[] numbers = each.split(",");
+        for (int i = 0; i < list.length; i++) {
+            String changed = list[i].replace("{", "");
+            changed = list[i].replace("}", "");
             
-            for (String number : numbers) {
-                int n = Integer.parseInt(number);
-                if (!answer.contains(n)) {
-                    answer.add(n);
+            list[i] = changed;
+        }
+        
+        Arrays.sort(list, (a, b) -> a.length() - b.length());
+        
+        LinkedHashSet<Integer> answer = new LinkedHashSet<>();
+        
+        for (String each: list) {
+            String[] splt = each.split(",");
+            
+            for (String num: splt) {
+                if (!answer.contains(Integer.parseInt(num))) {
+                    answer.add(Integer.parseInt(num));
+                    break;
                 }
             }
         }
