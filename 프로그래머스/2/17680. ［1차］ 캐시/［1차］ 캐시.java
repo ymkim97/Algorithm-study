@@ -3,28 +3,24 @@ import java.util.*;
 class Solution {
     public int solution(int cacheSize, String[] cities) {
         int answer = 0;
-        LinkedList<String> lru = new LinkedList<>();
         
-        for (String city : cities) {
+        ArrayDeque<String> ad = new ArrayDeque<>();
+        
+        for (String city: cities) {
             city = city.toLowerCase();
             
-            if (!lru.contains(city)) { // cache miss
-                if (lru.size() == cacheSize) {
-                    lru.pollFirst();
-                }
-                
-                if (cacheSize != 0) {
-                    lru.add(city);
-                }
-
-                answer += 5;
-            }
-            
-            else { // cache hit
-                lru.remove(city);
-                lru.add(city);
-                
+            if (ad.contains(city)) {
                 answer += 1;
+                ad.remove(city);
+                ad.addLast(city); 
+            } else {
+                answer += 5;
+                
+                if (cacheSize == 0) continue;
+                
+                if (ad.size() == cacheSize) ad.pollFirst();
+          
+                ad.addLast(city);
             }
         }
         
