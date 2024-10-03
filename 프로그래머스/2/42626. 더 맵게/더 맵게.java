@@ -2,28 +2,29 @@ import java.util.*;
 
 class Solution {
     public int solution(int[] scoville, int K) {
-        int answer = 0;
-        Queue<Integer> pq = new PriorityQueue<>();
-
-        for (int sc : scoville) {
-            pq.offer(sc);
+        PriorityQueue<Integer> pq = new PriorityQueue<>();
+        
+        for (int s : scoville) {
+            pq.offer(s);
         }
         
-        while (!pq.isEmpty()) {
-            if (pq.peek() >= K) break;
-            
-            if (pq.size() == 1) {
-                if (pq.peek() < K) answer = -1;
-                break;
-            }
-            
+        int cnt = 0;
+        
+        while (pq.size() >= 2) {           
             int first = pq.poll();
             int second = pq.poll();
             
-            pq.offer(first + (second * 2));
-            answer += 1;
+            if (first >= K) return cnt;
+            
+            int mixed = first + second * 2;
+            
+            pq.offer(mixed);
+            
+            cnt += 1;
         }
         
-        return answer;
+        if (pq.isEmpty() || pq.peek() < K) return -1;
+        
+        return cnt;
     }
 }
