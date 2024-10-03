@@ -4,30 +4,30 @@ class Solution {
     public int solution(String str1, String str2) {
         str1 = str1.toLowerCase();
         str2 = str2.toLowerCase();
-        
-        List<String> str1Lst = new ArrayList<>();
-        List<String> str2Lst = new ArrayList<>();
+
+        List<String> lst1 = new ArrayList<>();
+        List<String> lst2 = new ArrayList<>();
         
         for (int i = 0; i < str1.length() - 1; i++) {
-            if (Character.isAlphabetic(str1.charAt(i)) && Character.isAlphabetic(str1.charAt(i + 1))) {
-                str1Lst.add(str1.substring(i, i + 2));
-            }
+            if (!Character.isLetter(str1.charAt(i)) || !Character.isLetter(str1.charAt(i + 1))) continue;
+            
+            lst1.add(str1.substring(i, i + 2));
         }
         
         for (int i = 0; i < str2.length() - 1; i++) {
-            if (Character.isAlphabetic(str2.charAt(i)) && Character.isAlphabetic(str2.charAt(i + 1))) {
-                str2Lst.add(str2.substring(i, i + 2));
-            }
+            if (!Character.isLetter(str2.charAt(i)) || !Character.isLetter(str2.charAt(i + 1))) continue;
+            
+            lst2.add(str2.substring(i, i + 2));
         }
         
-        if (str1Lst.isEmpty() && str2Lst.isEmpty()) {
+        if (lst1.isEmpty() && lst2.isEmpty()) {
             return 65536;
         }
         
-        List<String> cp2 = new ArrayList<>(str2Lst);
         List<String> and = new ArrayList<>();
-
-        for (String s : str1Lst) {
+        List<String> cp2 = new ArrayList<>(lst2);
+        
+        for (String s : lst1) {
             if (cp2.contains(s)) {
                 and.add(s);
                 cp2.remove(s);
@@ -35,15 +35,14 @@ class Solution {
         }
         
         List<String> all = new ArrayList<>();
-        all.addAll(str1Lst);
-        all.addAll(str2Lst);
+        
+        all.addAll(lst1);
+        all.addAll(lst2);
         
         for (String s : and) {
             all.remove(s);
         }
         
-        double answer = (double)and.size() / all.size();
-
-        return (int) (answer * 65536);
+        return (int) ((double)and.size() / all.size() * 65536);
     }
 }
