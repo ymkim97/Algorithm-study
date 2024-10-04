@@ -3,50 +3,61 @@ import java.util.*;
 class Solution {
     public int[] solution(int[] fees, String[] records) {
         List<Integer> answer = new ArrayList<>();
-        Map<String, Integer> result = new HashMap<>();
-        Map<String, Integer> parked = new HashMap<>();
-        List<String> numbers = new ArrayList<>();
+        
+        Map<Integer, Integer> idAndTimeSum = new HashMap<>();
+        Map<Integer, Integer> ins = new HashMap<>();
         
         for (String record : records) {
-            String[] recs = record.split(" ");
-            String[] time = recs[0].split(":");
-            if (!numbers.contains(recs[1])) {
-                numbers.add(recs[1]);
-            }
-                
-            if (parked.containsKey(recs[1])) { // 주차되어있는 경우
-                int enteredTime = parked.get(recs[1]);
-                int currentTime = 60 * Integer.parseInt(time[0]) + Integer.parseInt(time[1]);
-                
-                result.put(recs[1], result.getOrDefault(recs[1], 0) + currentTime - enteredTime);
-                parked.remove(recs[1]);
-            }
+            String[] cmd = record.split(" ");
             
-            else { // 입차인 경우
-                parked.put(recs[1], 60 * Integer.parseInt(time[0]) + Integer.parseInt(time[1]));
+            int time = convertTime(cmd[0]);
+            int carId = Integer.parseInt(cmd[1]);
+            String dir = cmd[2];
+            
+            if (dir.equals("IN")) {
+                ins.put(carId, time);
+            } else {
+                int inTime = ins.get(carId);
+                ins.remove(carId);
+                
+                int duration = time - inTime;
+                
+                
+                idAndTimeSum.put(carId, idAndTimeSum.getOrDefault(carId, 0) + duration);
             }
         }
-                
-        Collections.sort(numbers);
         
-        for (String number : numbers) {
-            if (parked.containsKey(number)) { // 출차 안한 차
-                int enteredTime = parked.get(number);
-                int currentTime = 60 * 23 + 59;
-                result.put(number, result.getOrDefault(number, 0) + currentTime - enteredTime);
-            }
+        List<Integer> keys = new ArrayList<>(ins.keySet());
+        
+        for (int key : keys) {
+            int inTime = ins.get(key);
+            int duration = (23 * 60 + 59) - inTime;
             
-            int time = result.get(number);
+            idAndTimeSum.put(key, idAndTimeSum.getOrDefault(key, 0) + duration);
+        }
+        
+        keys = new ArrayList<>(idAndTimeSum.keySet());
+        
+        Collections.sort(keys);
+        
+        for (int key : keys) {
+            int totalTime = idAndTimeSum.get(key);
+            int fee = 0;
             
-            if (time <= fees[0]) {
-                answer.add(fees[1]);
-            }
-            
+            if (totalTime <= fees[0]) fee = fees[1];
             else {
-                answer.add(fees[1] + (int)Math.ceil((time - fees[0]) / (double)fees[2]) * fees[3]);
+                fee = fees[1] + (int)Math.ceil((totalTime - fees[0]) / (double)fees[2]) * fees[3];
             }
+            
+            answer.add(fee);
         }
         
         return answer.stream().mapToInt(a -> a).toArray();
+    }
+    
+    public int convertTime(String time) {
+        String[] t = time.split(":");
+        
+        return Integer.parseInt(t[0]) * 60 + Integer.parseInt(t[1]);
     }
 }
