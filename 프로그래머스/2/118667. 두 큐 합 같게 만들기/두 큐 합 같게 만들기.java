@@ -2,49 +2,48 @@ import java.util.*;
 
 class Solution {
     public int solution(int[] queue1, int[] queue2) {
-        int answer = Integer.MAX_VALUE;
+        int answer = -1;
         
         long sum1 = Arrays.stream(queue1).sum();
         long sum2 = Arrays.stream(queue2).sum();
+        long targetSum = (sum1 + sum2) / 2;
         
-        if ((sum1 + sum2) % 2 != 0) return -1;
+        if ((sum1 + sum2) % 2 != 0) return answer;
         
-        int[] newQ = new int[queue1.length * 2];
+        int[] q = new int[queue1.length + queue2.length];
         
         for (int i = 0; i < queue1.length; i++) {
-            newQ[i] = queue1[i];
+            q[i] = queue1[i];
         }
         
         for (int i = 0; i < queue2.length; i++) {
-            newQ[queue1.length + i] = queue2[i];
+            q[queue1.length + i] = queue2[i];
         }
         
+        answer = 0;
         int left = 0;
         int right = queue1.length - 1;
-        int cnt = 0;
-        long tmp = sum1;
+        long sum = sum1;
+        boolean isAvail = false;
         
-        while (right < newQ.length) {
-            if (tmp == (sum1 + sum2) / 2) {
-                answer = Math.min(answer, cnt);
+        while (right < q.length) {
+            if (sum == targetSum) {
+                isAvail = true;
                 break;
-            }
-            
-            else if (tmp < (sum1 + sum2) / 2) {
-                if (right + 1 == newQ.length) break;
-                
+            } else if (sum < targetSum) {
                 right += 1;
-                tmp += newQ[right];
-            }
-            
-            else {
-                tmp -= newQ[left];
+                if (right == q.length) break;
+                
+                sum += q[right];
+            } else {
+                sum -= q[left];
                 left += 1;
             }
             
-            cnt += 1;
+            answer += 1;
         }
         
-        return answer == Integer.MAX_VALUE ? -1 : answer;
+        
+        return isAvail ? answer : -1;
     }
 }
