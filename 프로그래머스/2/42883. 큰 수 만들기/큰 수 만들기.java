@@ -1,30 +1,30 @@
 import java.util.*;
-import java.util.stream.*;
 
 class Solution {
-    public String solution(String number, int k) {
-        String answer = "";
-        Stack<Character> st = new Stack<>();
+    public String solution(String number, int k) {        
+        Stack<Character> stack = new Stack<>();
+        int removedCnt = 0;
         
-        for (char num : number.toCharArray()) {
-            if (st.isEmpty()) {
-                st.add(num);
-                continue;
+        for (char n : number.toCharArray()) {
+            while (removedCnt < k && !stack.isEmpty() && stack.peek() < n) {
+                removedCnt += 1;
+                stack.pop();
             }
             
-            while (!st.isEmpty() && st.peek() < num && k > 0) {
-                st.pop();
-                k -= 1;
-            }
-            
-            st.add(num);
+            stack.push(n);
         }
         
-        while (k > 0 && !st.isEmpty()) {
-            st.pop();
-            k -= 1;
+        while (removedCnt < k) {
+            stack.pop();
+            removedCnt += 1;
         }
         
-        return st.stream().map(s -> s.toString()).collect(Collectors.joining(""));
+        StringBuilder sb = new StringBuilder();
+        
+        while (!stack.isEmpty()) {
+            sb.append(stack.pop());
+        }
+        
+        return sb.reverse().toString();
     }
 }
