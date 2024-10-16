@@ -1,60 +1,61 @@
 import java.util.*;
 
 class Solution {
-    
-    int answer = Integer.MAX_VALUE;
-    int n;
-    List<Integer>[] tree;
-    
     public int solution(int n, int[][] wires) {
-        tree = new ArrayList[n + 1];
-        this.n = n;
+        int answer = Integer.MAX_VALUE;
         
-        for (int i = 1; i <= n; i++) {
-            tree[i] = new ArrayList<>();
+        List<Integer>[] map = new ArrayList[n + 1];
+        
+        for (int i = 0; i < wires.length; i++) {
+            int a = wires[i][0];
+            int b = wires[i][1];
+            
+            if (map[a] == null) map[a] = new ArrayList<>();
+            if (map[b] == null) map[b] = new ArrayList<>();
+            
+            map[a].add(b);
+            map[b].add(a);
         }
         
-        for (int[] wire : wires) {
-            int a = wire[0];
-            int b = wire[1];
+        for (int i = 0; i < wires.length; i++) {
+            int a = wires[i][0];
+            int b = wires[i][1];
             
-            tree[a].add(b);
-            tree[b].add(a);
-        }
-        
-        for (int[] wire : wires) {
-            int a = wire[0];
-            int b = wire[1];
+            map[a].remove(Integer.valueOf(b));
+            map[b].remove(Integer.valueOf(a));
             
-            bfs(1, a, b);
+            int cnt1 = bfs(a, map);
+            int cnt2 = bfs(b, map);
+            
+            answer = Math.min(answer, Math.abs(cnt1 - cnt2));
+            
+            map[a].add(b);
+            map[b].add(a);
         }
         
         return answer;
     }
     
-    public void bfs(int start, int a, int b) {
-        boolean[] visited = new boolean[n + 1];
-        int count = 0;
+    public int bfs(int start, List<Integer>[] map) {
+        Set<Integer> visited = new HashSet<>();
         Queue<Integer> q = new LinkedList<>();
+        int cnt = 1;
+        
         q.offer(start);
-        visited[start] = true;
+        visited.add(start);
         
         while (!q.isEmpty()) {
             int now = q.poll();
-            count += 1;
             
-            for (int child : tree[now]) {
-                if ((a == now && b == child) || (a == child && b == now)) continue;
-                
-                if (!visited[child]) {
-                    visited[child] = true;
-                    q.offer(child);
+            for (int next : map[now]) {
+                if (!visited.contains(next)) {
+                    visited.add(next);
+                    q.offer(next);
+                    cnt += 1;
                 }
             }
         }
         
-        int other = n - count;
-        
-        answer = Math.min(answer, Math.abs(other - count));
+        return cnt;
     }
 }
