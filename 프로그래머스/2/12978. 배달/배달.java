@@ -1,50 +1,51 @@
 import java.util.*;
 
 class Solution {
-    
     public int solution(int N, int[][] road, int K) {
-        int answer = 0;
+        int answer = 1;
+
         int[] distance = new int[N + 1];
-        List<int[]> map[] = new ArrayList[N + 1];
         
-        for (int i = 1; i < N + 1; i++) {
-            map[i] = new ArrayList<>();
-        }
+        Arrays.fill(distance, Integer.MAX_VALUE);
+        distance[1] = 0;
+        
+        List<int[]>[] map = new ArrayList[N + 1]; //0: num, 1: dis
         
         for (int[] r : road) {
             int a = r[0];
             int b = r[1];
-            int cost = r[2];
+            int d = r[2];
             
-            map[a].add(new int[] {b, cost});
-            map[b].add(new int[] {a, cost});
+            if (map[a] == null) map[a] = new ArrayList<>();
+            if (map[b] == null) map[b] = new ArrayList<>();
+            
+            map[a].add(new int[] {b, d});
+            map[b].add(new int[] {a, d});
         }
         
-        Arrays.fill(distance, 500_001);
-        
-        distance[1] = 0;
-        Queue<int[]> pq = new PriorityQueue<>((a, b) -> a[0] - b[0]);
-        pq.offer(new int[] {0, 1});
+        PriorityQueue<int[]> pq = new PriorityQueue<>((a, b) -> a[1] - b[1]); //0: num, 1: dis
+        pq.offer(new int[] {1, 0});
         
         while (!pq.isEmpty()) {
-            int[] cur = pq.poll();
-            int dist = cur[0];
-            int now = cur[1];
+            int[] now = pq.poll();
+            int n = now[0];
+            int dis = now[1];
             
-            if (distance[now] < dist) continue;
+            if (distance[n] < dis) continue;
             
-            for (int[] next : map[now]) {
-                int sum = dist + next[1];
+            for (int[] next : map[n]) {
+                int nextN = next[0];
+                int d = next[1];
                 
-                if (sum < distance[next[0]]) {
-                    distance[next[0]] = sum;
-                    pq.offer(new int[] {sum, next[0]});
+                if (distance[nextN] > dis + d) {
+                    distance[nextN] = dis + d;
+                    pq.offer(new int[] {nextN, dis + d});
                 }
             }
         }
-
-        for (int d : distance) {
-            if (d <= K) answer += 1;
+        
+        for (int i = 2; i <= N; i++) {
+            if (distance[i] <= K) answer += 1;
         }
         
         return answer;
