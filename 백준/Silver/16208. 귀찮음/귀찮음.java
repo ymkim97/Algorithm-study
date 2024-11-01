@@ -11,7 +11,7 @@ public class Main {
 		
 		st = new StringTokenizer(br.readLine());
 		
-		int sum = 0;
+		long sum = 0;
 		Queue<Integer> pq = new PriorityQueue<>();
 		
 		for (int i = 0; i < N; i++) {
@@ -21,7 +21,7 @@ public class Main {
 			pq.offer(n);
 		}
 		
-		int answer = 0;
+		long answer = 0;
 		
 		for (int i = 0; i < N - 1; i++) {
 			int cut = pq.poll();
