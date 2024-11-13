@@ -3,8 +3,6 @@ class Solution {
         long answer = 0;
         Arrays.sort(nums);
 
-        System.out.println(Arrays.toString(nums));
-
         for (int i = 0; i < nums.length; i++) {
             int start = i + 1;
             int end = nums.length - 1;
