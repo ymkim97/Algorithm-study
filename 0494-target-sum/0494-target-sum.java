@@ -1,22 +1,21 @@
 class Solution {
 
-    int answer = 0;
-
     public int findTargetSumWays(int[] nums, int target) {
-    
-        backtrack(target, 1, nums[0], nums);
-        backtrack(target, 1, -1 * nums[0], nums);
+        int numsSum = Arrays.stream(nums).sum();
+        int[][] dp = new int[nums.length][2 * numsSum + 1]; // 0: idx, 1: number of reach to sum using idx
 
-        return answer;
-    }
+        dp[0][nums[0] + numsSum] = 1;
+        dp[0][-nums[0] + numsSum] += 1;
 
-    public void backtrack(int target, int idx, int sum, int[] nums) {
-        if (idx == nums.length) {
-            if (sum == target) answer += 1;
-            return;
+        for (int i = 1; i < nums.length; i++) {
+            for (int sum = -numsSum; sum <= numsSum; sum++) {
+                if (dp[i - 1][sum + numsSum] > 0) {
+                    dp[i][sum + numsSum + nums[i]] += dp[i - 1][sum + numsSum];
+                    dp[i][sum + numsSum - nums[i]] += dp[i - 1][sum + numsSum];
+                }
+            }
         }
 
-        backtrack(target, idx + 1, sum + nums[idx], nums);
-        backtrack(target, idx + 1, sum + (-1 * nums[idx]), nums);
+        return Math.abs(target) > numsSum ? 0 : dp[nums.length - 1][target + numsSum];
     }
 }
