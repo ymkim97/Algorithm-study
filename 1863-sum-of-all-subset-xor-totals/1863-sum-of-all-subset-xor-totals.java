@@ -30,7 +30,7 @@ class Solution {
             if (!visited[i]) {
                 vis.add(nums[i]);
                 visited[i] = true;
-                backtrack(nums, targetLen, i, currentLen + 1, vis);
+                backtrack(nums, targetLen, i + 1, currentLen + 1, vis);
                 vis.remove(vis.size() - 1);
                 visited[i] = false;
             }
