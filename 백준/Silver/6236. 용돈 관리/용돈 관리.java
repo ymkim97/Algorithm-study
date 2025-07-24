@@ -1,43 +1,42 @@
 import java.io.*;
 import java.util.*;
 
-class Main {
+public class Main {
 
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st;
 
         st = new StringTokenizer(br.readLine());
-        
+
         int N = Integer.parseInt(st.nextToken());
         int M = Integer.parseInt(st.nextToken());
+
+        int[] day = new int[N];
         
-        int[] amount = new int[N];
-        int max = 0;
-        
+        int start = 0;
+        int end = 100_000 * 10_000;;
+
         for (int i = 0; i < N; i++) {
-            amount[i] = Integer.parseInt(br.readLine());
-            max = Math.max(max, amount[i]);
+            day[i] = Integer.parseInt(br.readLine());
+            start = Math.max(start, day[i]);
         }
+
+        start -= 1;
         
-        int left = max;
-        int right = 100_000 * 10_000;
-        int answer = 0;
-        
-        while (left <= right) {
-            int mid = (left + right) / 2;
-            
-            if (M < check(amount, mid)) {
-                left = mid + 1;
+        while (start + 1 < end) {
+            int mid = (start + end) / 2;
+
+            if (check(day, mid) > M) {
+            	start = mid;
             } else {
-                answer = mid;
-                right = mid - 1;
+            	end = mid;
             }
         }
         
-        System.out.println(answer);
+        System.out.println(end);
     }
-    
+
     public static int check(int[] amount, int money) {
         int count = 1;
         int current = money;
