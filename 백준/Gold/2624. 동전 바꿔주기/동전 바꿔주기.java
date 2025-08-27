@@ -14,39 +14,31 @@ public class Main {
         T = Integer.parseInt(br.readLine());
         k = Integer.parseInt(br.readLine());
 
-        coins = new int[k][2]; // 0: coinType, 1: coinAmount
+        coins = new int[k + 1][2]; // 0: coinType, 1: coinAmount
 
-        for (int i = 0; i < k; i++) {
+        for (int i = 1; i <= k; i++) {
             st = new StringTokenizer(br.readLine());
 
             coins[i][0] = Integer.parseInt(st.nextToken());
             coins[i][1] = Integer.parseInt(st.nextToken());
         }
 
-        dp = new int[k][T + 1];
+        dp = new int[k + 1][T + 1];
+        dp[0][0] = 1;
 
-        for (int i = 0; i < k; i++) {
-            for (int j = 0; j < T; j++) {
-                dp[i][j] = -1;
+        for (int i = 1; i <= k; i++) {
+                int amount = coins[i][0];
+            for (int j = 0; j < coins[i][1] + 1; j++) {
+                for (int m = 0; m <= T; m++) {
+                    int cost = m + amount * j;
+
+                    if (cost > T) break;
+
+                    dp[i][cost] += dp[i - 1][m];
+                }
             }
         }
 
-        System.out.println(comb(0, 0));
-    }
-
-    static private int comb(int money, int coinType) {
-        if (money == T) return 1;
-
-        if (money > T || coinType == k) return 0;
-
-        if (dp[coinType][money] != -1) return dp[coinType][money];
-
-        int tmp = 0;
-        for (int i = 0; i < coins[coinType][1] + 1; i++) {
-            int cost = coins[coinType][0] * i;
-            tmp += comb(money + cost, coinType + 1);
-        }
-
-        return dp[coinType][money] = tmp;
+        System.out.println(dp[k][T]);
     }
 }
