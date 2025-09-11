@@ -2,66 +2,51 @@ import java.util.*;
 
 class Solution {
     
-    int[] discountPercent = {10, 20, 30, 40};
-    int[][] users;
-    int[] emoticons;
-    List<int[]> answer;
+    int[] answer = new int[2];
+    int[] discount = new int[] {10, 20, 30, 40};
     
     public int[] solution(int[][] users, int[] emoticons) {
-        answer = new ArrayList<>();
-        this.users = users;
-        this.emoticons = emoticons;
+        bruteforce(new ArrayList<>(), users, emoticons);
         
-        for (int i = 0; i < 4; i++) {
-            List<int[]> discounted = new ArrayList<>();
-            int d = (int)(emoticons[0] - emoticons[0] * (discountPercent[i] / 100.0));
-            discounted.add(new int[] {discountPercent[i], d});
-            calculate(discounted, 1);
-        }
-        
-        Collections.sort(answer, (a, b) -> {
-            if (a[0] != b[0]) return b[0] - a[0];
-            
-            return b[1] - a[1];
-        });
-        
-        return answer.get(0);
+        return answer;
     }
     
-    public void calculate(List<int[]> discounted, int nextIdx) { // discounted[0] = per, 1 = amount
-        if (nextIdx == emoticons.length) {
-            int plusUser = 0;
-            int sumOfSales = 0;
-
+    private void bruteforce(List<Integer> discountToUse, int[][] users, int[] emoticons) {
+        if (discountToUse.size() == emoticons.length) {
+            int[] discountedEmoticons = new int[emoticons.length];
+            
+            for (int i = 0; i < emoticons.length; i++) {
+                discountedEmoticons[i] = emoticons[i] * (100 - discountToUse.get(i)) / 100;
+            }
+            
+            int[] temp = new int[2];
+            
             for (int[] user : users) {
-                int disFrom = user[0];
-                int plusAfter = user[1];
-                int tmpTotal = 0;
+                int minDiscount = user[0];
+                int thresholdForSub = user[1];
+                int payed = 0;
                 
-                for (int[] dis : discounted) {
-                    if (dis[0] >= disFrom) {
-                        tmpTotal += dis[1];
+                for (int i = 0; i < discountedEmoticons.length; i++) {
+                    if (minDiscount <= discountToUse.get(i)) {
+                        payed += discountedEmoticons[i];
                     }
                 }
                 
-                if (tmpTotal >= plusAfter) {
-                    plusUser += 1;
-                }
-                
-                else {
-                    sumOfSales += tmpTotal;
-                }
+                if (payed >= thresholdForSub) temp[0] += 1;
+                else temp[1] += payed;
             }
             
-            answer.add(new int[] {plusUser, sumOfSales});
+            if (temp[0] > answer[0] || (temp[0] == answer[0] && temp[1] > answer[1])) {
+                answer = temp;
+            }
+            
             return;
         }
         
         for (int i = 0; i < 4; i++) {
-            int d = (int)(emoticons[nextIdx] - emoticons[nextIdx] * (discountPercent[i] / 100.0));
-            discounted.add(new int[] {discountPercent[i], d});
-            calculate(discounted, nextIdx + 1);
-            discounted.remove(discounted.size() - 1);
+            discountToUse.add(discount[i]);
+            bruteforce(discountToUse, users, emoticons);
+            discountToUse.remove(discountToUse.size() - 1);
         }
     }
 }
