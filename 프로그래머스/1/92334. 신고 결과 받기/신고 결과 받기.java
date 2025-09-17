@@ -1,34 +1,35 @@
 import java.util.*;
 
 class Solution {
-    public int[] solution(String[] id_list, String[] reports, int k) {
+    public int[] solution(String[] id_list, String[] report, int k) {
         int[] answer = new int[id_list.length];
-        Map<String, Integer> reportCount = new HashMap<>();
-        Map<String, Set<String>> reportTo = new HashMap<>();
         
-        for (String report : reports) {
-            String[] lst = report.split(" ");
-            String from = lst[0];
-            String to = lst[1];
+        Map<String, Set<String>> reportedCount = new HashMap<>();
+        Map<String, Integer> notifyCount = new HashMap<>();
+        
+        for (String id : id_list) {
+            reportedCount.put(id, new HashSet<>());
+        }
+        
+        for (String r : report) {
+            String[] splt = r.split(" ");
+            String reporter = splt[0];
+            String reported = splt[1];
             
-            Set<String> tmp = reportTo.getOrDefault(from, new HashSet<>()); // 각자 누구를 리폿했는지 
-            if (!tmp.contains(to)) {
-                reportCount.put(to, reportCount.getOrDefault(to, 0) + 1); // 각자 리폿을 받는 횟수 count
-                tmp.add(to);
-                reportTo.put(from, tmp);
+            Set<String> reporters = reportedCount.get(reported);
+            reporters.add(reporter);
+        }
+        
+        for (String reportedCountKey : reportedCount.keySet()) {
+            if (reportedCount.get(reportedCountKey).size() >= k) {
+                for (String reporter : reportedCount.get(reportedCountKey)) {
+                    notifyCount.put(reporter, notifyCount.getOrDefault(reporter, 0) + 1);
+                }
             }
         }
         
         for (int i = 0; i < id_list.length; i++) {
-            int cnt = 0;
-            Set<String> reported = reportTo.getOrDefault(id_list[i], new HashSet<>());
-            
-            for (String eachReport : reported) {
-                if (reportCount.get(eachReport) >= k) {
-                    cnt += 1;
-                }
-            }
-            answer[i] = cnt;
+            answer[i] = notifyCount.getOrDefault(id_list[i], 0);
         }
         
         return answer;
