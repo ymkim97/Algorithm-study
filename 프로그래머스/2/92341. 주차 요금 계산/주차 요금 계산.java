@@ -2,62 +2,60 @@ import java.util.*;
 
 class Solution {
     public int[] solution(int[] fees, String[] records) {
-        List<Integer> answer = new ArrayList<>();
+        Map<Integer, Integer> parked = new HashMap<>();
+        Map<Integer, Integer> parkTimeAcc = new HashMap<>();
         
-        Map<Integer, Integer> idAndTimeSum = new HashMap<>();
-        Map<Integer, Integer> ins = new HashMap<>();
-        
-        for (String record : records) {
-            String[] cmd = record.split(" ");
+        for (String r : records) {
+            String[] splt = r.split(" ");
             
-            int time = convertTime(cmd[0]);
-            int carId = Integer.parseInt(cmd[1]);
-            String dir = cmd[2];
+            String time = splt[0];
+            int carNumber = Integer.parseInt(splt[1]);
+            String inOrOut = splt[2];
             
-            if (dir.equals("IN")) {
-                ins.put(carId, time);
+            int hour = Integer.valueOf(time.split(":")[0]);
+            int min = Integer.valueOf(time.split(":")[1]);
+            
+            int totalTime = hour * 60 + min;
+            
+            if (inOrOut.equals("IN")) {
+                parked.put(carNumber, totalTime);
             } else {
-                int inTime = ins.get(carId);
-                ins.remove(carId);
+                int in = parked.get(carNumber);
+                parked.remove(Integer.valueOf(carNumber));
                 
-                int duration = time - inTime;
-                
-                
-                idAndTimeSum.put(carId, idAndTimeSum.getOrDefault(carId, 0) + duration);
+                int duration = totalTime - in;
+                parkTimeAcc.put(carNumber, parkTimeAcc.getOrDefault(carNumber, 0) + duration);
             }
         }
         
-        List<Integer> keys = new ArrayList<>(ins.keySet());
-        
-        for (int key : keys) {
-            int inTime = ins.get(key);
-            int duration = (23 * 60 + 59) - inTime;
-            
-            idAndTimeSum.put(key, idAndTimeSum.getOrDefault(key, 0) + duration);
+        if (!parked.isEmpty()) {
+            for (int key : parked.keySet()) {
+                int in = parked.get(key);
+                
+                int duration = 23 * 60 + 59 - in;
+                parkTimeAcc.put(key, parkTimeAcc.getOrDefault(key, 0) + duration);
+            }
         }
         
-        keys = new ArrayList<>(idAndTimeSum.keySet());
+        int[] answer = new int[parkTimeAcc.size()];
         
+        List<Integer> keys = new ArrayList<>(parkTimeAcc.keySet());
         Collections.sort(keys);
         
-        for (int key : keys) {
-            int totalTime = idAndTimeSum.get(key);
-            int fee = 0;
+        for (int i = 0; i < answer.length; i++) {
+            int tmp = fees[1];
+            int duration = parkTimeAcc.get(keys.get(i));
             
-            if (totalTime <= fees[0]) fee = fees[1];
-            else {
-                fee = fees[1] + (int)Math.ceil((totalTime - fees[0]) / (double)fees[2]) * fees[3];
+            if (duration > fees[0]) {
+                duration -= fees[0];
+
+                int over = (int)Math.ceil((double)duration / fees[2]);
+                tmp += over * fees[3];
             }
             
-            answer.add(fee);
+            answer[i] = tmp;
         }
         
-        return answer.stream().mapToInt(a -> a).toArray();
-    }
-    
-    public int convertTime(String time) {
-        String[] t = time.split(":");
-        
-        return Integer.parseInt(t[0]) * 60 + Integer.parseInt(t[1]);
+        return answer;
     }
 }
