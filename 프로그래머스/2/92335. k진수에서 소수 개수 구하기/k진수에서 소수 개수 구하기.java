@@ -4,32 +4,34 @@ class Solution {
     public int solution(int n, int k) {
         int answer = 0;
         
-        String[] binLst = makeBinLst(n, k);
+        String kConverted = convert(n, k);
         
-        for (String bin : binLst) {
-            if (bin.equals("")) continue;
-            
-            if (isPrime(Long.parseLong(bin))) answer += 1;
+        String[] splt = kConverted.split("0");
+        
+        for (String s : splt) {
+            if (!s.isBlank() && isPrime(s)) answer += 1;
         }
         
         return answer;
     }
     
-    public String[] makeBinLst(int n, int k) {
+    private String convert(int n, int k) {
         StringBuilder sb = new StringBuilder();
         
-        while (n != 0) {
-            sb.insert(0, n % k);
+        while (n > 0) {
+            sb.append(n % k);
             n /= k;
         }
         
-        return sb.toString().split("0");
+        return sb.reverse().toString();
     }
     
-    public boolean isPrime(Long n) {
-        if (n == 1) return false;
+    private boolean isPrime(String s) {
+        long n = Long.valueOf(s);
         
-        for (long i = 2; i < (long)Math.sqrt(n) + 1; i++) {
+        if (n <= 1) return false;
+        
+        for (int i = 2; i <= (int)Math.sqrt(n); i++) {
             if (n % i == 0) return false;
         }
         
