@@ -2,37 +2,40 @@ import java.util.*;
 
 class Solution {
     
-    int answer = 0;
-    int[] gInfo;
-    int[][] gEdges;
+    int maxSheep = 0;
     
     public int solution(int[] info, int[][] edges) {
-        gInfo = info;
-        gEdges = edges;
-        boolean[] visited = new boolean[info.length];
-        dfs(0, 0, 0, visited);
+        List<Integer>[] map = new ArrayList[info.length];
         
-        return answer;
+        for (int i = 0; i < info.length; i++) {
+            map[i] = new ArrayList<>();
+        }
+        
+        for (int[] edge: edges) {
+            map[edge[0]].add(edge[1]);
+        }
+        
+        dfs(0, 0, 0, new ArrayList<>(), info, map);
+        
+        return maxSheep;
     }
     
-    public void dfs(int idx, int sheep, int wolf, boolean[] visited) {
-        visited[idx] = true;
-        
-        if(gInfo[idx] == 0) {
-            sheep += 1;
-            answer = Math.max(answer, sheep);
-        }
-        
-        else {
-            wolf += 1;
-        }
+    private void dfs(int cur, int sheep, int wolf, List<Integer> next, int[] info, List<Integer>[] map) {
+        if (info[cur] == 0) sheep += 1;
+        else wolf += 1;
         
         if (wolf >= sheep) return;
         
-        for (int[] edge : gEdges) {
-            if (visited[edge[0]] && !visited[edge[1]]) {
-                dfs(edge[1], sheep, wolf, Arrays.copyOf(visited, visited.length));           
-            }
+        maxSheep = Math.max(maxSheep, sheep);
+        
+        List<Integer> copyNext = new ArrayList<>(next);
+        copyNext.remove(Integer.valueOf(cur));
+        for (int n : map[cur]) {
+            copyNext.add(n);
+        }
+        
+        for (int n : copyNext) {
+            dfs(n, sheep, wolf, copyNext, info, map);
         }
     }
 }
